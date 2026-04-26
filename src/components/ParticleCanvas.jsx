@@ -4,12 +4,12 @@ export default function ParticleCanvas() {
   const canvasRef = useRef(null)
 
   useEffect(() => {
-    if (window.innerWidth < 769) return
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
 
-    let W, H, pts = [], raf
+    let W, H, pts = [], rafId = null
+    const MAX = 130
 
     function resize() {
       W = canvas.width  = window.innerWidth
@@ -27,11 +27,6 @@ export default function ParticleCanvas() {
         o:  Math.random() * 0.35 + 0.1,
       }))
     }
-
-    resize()
-    build()
-
-    const MAX = 130
 
     function draw() {
       ctx.clearRect(0, 0, W, H)
@@ -63,17 +58,38 @@ export default function ParticleCanvas() {
         ctx.fill()
       })
 
-      raf = requestAnimationFrame(draw)
+      rafId = requestAnimationFrame(draw)
     }
 
-    draw()
+    function start() {
+      resize()
+      build()
+      draw()
+    }
 
-    const onResize = () => { resize(); build() }
-    window.addEventListener('resize', onResize, { passive: true })
+    function stop() {
+      cancelAnimationFrame(rafId)
+      rafId = null
+      if (W && H) ctx.clearRect(0, 0, W, H)
+    }
+
+    function handleResize() {
+      if (window.innerWidth < 769) {
+        if (rafId !== null) stop()
+      } else {
+        resize()
+        build()
+        if (rafId === null) draw()
+      }
+    }
+
+    if (window.innerWidth >= 769) start()
+
+    window.addEventListener('resize', handleResize, { passive: true })
 
     return () => {
-      cancelAnimationFrame(raf)
-      window.removeEventListener('resize', onResize)
+      stop()
+      window.removeEventListener('resize', handleResize)
     }
   }, [])
 

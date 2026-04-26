@@ -104,11 +104,10 @@ export default function Pricing() {
               </ul>
               <a
                 href={plan.href}
-                {...(plan.external ? { target: '_blank', rel: 'noopener' } : {})}
+                className={`plan-btn${plan.ctaCls ? ` ${plan.ctaCls}` : ''}`}
+                {...(plan.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               >
-                <button className={`plan-btn${plan.ctaCls ? ` ${plan.ctaCls}` : ''}`}>
-                  {plan.cta}
-                </button>
+                {plan.cta}
               </a>
             </motion.div>
           ))}

@@ -23,17 +23,18 @@ export function useCounter(target, duration = 2000) {
   useEffect(() => {
     if (!active) return
     const start = performance.now()
+    let rafId
 
     function tick(now) {
       const elapsed = now - start
       const progress = Math.min(elapsed / duration, 1)
-      // cubic ease-out
       const eased = 1 - Math.pow(1 - progress, 3)
       setValue(Math.round(eased * target))
-      if (progress < 1) requestAnimationFrame(tick)
+      if (progress < 1) rafId = requestAnimationFrame(tick)
     }
 
-    requestAnimationFrame(tick)
+    rafId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId)
   }, [active, target, duration])
 
   return [ref, value]

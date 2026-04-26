@@ -28,6 +28,13 @@ export default function Navbar() {
     return () => document.removeEventListener('click', fn)
   }, [open])
 
+  // close when viewport widens to desktop
+  useEffect(() => {
+    const fn = () => { if (window.innerWidth > 768) setOpen(false) }
+    window.addEventListener('resize', fn, { passive: true })
+    return () => window.removeEventListener('resize', fn)
+  }, [])
+
   return (
     <nav className={`nav${scrolled ? ' scrolled' : ''}`}>
       <div className="nav-inner">

@@ -4,10 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 export default function Waitlist() {
   const [submitted, setSubmitted] = useState(false)
   const [loading,   setLoading]   = useState(false)
+  const [error,     setError]     = useState(null)
 
   async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
+    setError(null)
     try {
       const res = await fetch('https://formspree.io/f/mlgavzvr', {
         method: 'POST',
@@ -17,10 +19,10 @@ export default function Waitlist() {
       if (res.ok) {
         setSubmitted(true)
       } else {
-        e.target.submit()
+        setError('Submission failed. Please try again.')
       }
     } catch {
-      e.target.submit()
+      setError('Network error. Please check your connection and try again.')
     } finally {
       setLoading(false)
     }
@@ -69,6 +71,11 @@ export default function Waitlist() {
                 <button type="submit" className="wl-btn" disabled={loading}>
                   {loading ? 'SUBMITTING...' : 'JOIN WAITLIST →'}
                 </button>
+                {error && (
+                  <p style={{ color: '#ff4d4d', fontSize: 13, marginTop: 10, textAlign: 'center' }}>
+                    {error}
+                  </p>
+                )}
               </motion.form>
             ) : (
               <motion.div
